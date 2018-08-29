@@ -4,8 +4,8 @@ import { readFileSync, writeFileSync } from 'fs';
 import webpack from 'webpack';
 import config from './config';
 
-const getCompiledRes = () =>
-	readFileSync(resolve(__dirname, 'dist', 'index.wxml'), 'utf8');
+const getCompiledRes = (filePath = 'index.wxml') =>
+	readFileSync(resolve(__dirname, 'dist', filePath), 'utf8');
 
 const writeWXML = (content) =>
 	writeFileSync(resolve(__dirname, 'src', 'index.wxml'), content, 'utf8');
@@ -22,10 +22,10 @@ const mkdir = () => {
 	clear();
 };
 
-const compile = (content, options = {}) => {
+const compile = (content, options = {}, webpackConfig = {}) => {
 	writeWXML(content);
 	return new Promise((resolve, reject) => {
-		webpack(config(options), (err, stats) => {
+		webpack(config(options, webpackConfig), (err, stats) => {
 			if (err || stats.hasErrors()) {
 				reject(err || JSON.stringify(stats.toJson('errors-only')));
 			}
@@ -162,6 +162,57 @@ describe('wxml-loader', async () => {
 		await compile(code, { globalPublicPath: 'http://m.baidu.com/' });
 		expect(getCompiledRes()).toBe(
 			'<image src="http://m.baidu.com/fixture.gif" />',
+		);
+	});
+
+	test('should generate safe path', async () => {
+		const context = resolve(__dirname, 'src/sub');
+		const outside = resolve(__dirname, 'src');
+		await compile('<image src="./fixture.gif" />', {}, {
+			context,
+			entry: {
+				'_/index.js': '../index.wxml',
+			},
+			output: {
+				filename: '[name]',
+			},
+			module: {
+				rules: [
+					{
+						test: resolve(outside, 'index.wxml'),
+						use: [
+							{
+								loader: 'file-loader',
+								options: {
+									name: '_/index.wxml',
+								},
+							},
+							{
+								loader: require.resolve('../src'),
+								options: {
+									root: context,
+									enforceRelativePath: true,
+								},
+							},
+						],
+					},
+					{
+						test: /\.gif$/,
+						include: outside,
+						use: [
+							{
+								loader: 'file-loader',
+								options: {
+									name: '[name].[ext]',
+								},
+							},
+						],
+					},
+				],
+			},
+		});
+		expect(getCompiledRes('_/index.wxml')).toBe(
+			'<image src="../fixture.gif" />',
 		);
 	});
 });

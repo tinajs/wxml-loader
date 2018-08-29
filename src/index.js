@@ -30,6 +30,10 @@ const extract = (src, __webpack_public_path__) => {
 	return sandbox.module.exports.toString();
 };
 
+const toSafeOutputPath = (filePath) => (filePath || '')
+	.replace(/\.\./g, '_')
+	.replace(/node_modules([/\\])/g, '_node_modules_$1');
+
 const defaultMinimizeConf = {
 	caseSensitive: true,
 	html5: true,
@@ -143,8 +147,10 @@ export default function (content) {
 		isStartsWithDot(source) ? source : `./${source}`;
 
 	const ensureRelativePath = (source) => {
-		const sourcePath = join(root, source);
-		const resourceDirname = dirname(resourcePath);
+		const ensureSafety = (root, filePath) =>
+			toSafeOutputPath(relative(root, filePath));
+		const sourcePath = ensureSafety(root, join(root, source));
+		const resourceDirname = ensureSafety(root, dirname(resourcePath));
 		source = relative(resourceDirname, sourcePath).replace(/\\/g, '/');
 		return ensureStartsWithDot(source);
 	};

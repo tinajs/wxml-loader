@@ -1,11 +1,13 @@
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
+import merge from 'webpack-merge';
 
-const srcDir = resolve(__dirname, 'src');
-
-export default (options = {}) => {
+export default (options = {}, webpackConfig = {}) => {
 	const { target, globalPublicPath = '/', ...wxmlLoaderOptions } = options;
-	return {
-		entry: resolve(__dirname, 'src', 'index.wxml'),
+	const entry = resolve(__dirname, 'src', 'index.wxml');
+	const context = dirname(entry);
+
+	return merge.smart({
+		entry,
 		mode: 'development',
 		output: {
 			filename: 'index.js',
@@ -23,13 +25,13 @@ export default (options = {}) => {
 							options: {
 								name: '[name].[ext]',
 								useRelativePath: true,
-								context: srcDir,
+								context,
 							},
 						},
 						{
-							loader: './src',
+							loader: require.resolve('../src'),
 							options: {
-								root: srcDir,
+								root: context,
 								...wxmlLoaderOptions,
 							},
 						},
@@ -43,7 +45,7 @@ export default (options = {}) => {
 							options: {
 								name: '[name].[ext]',
 								useRelativePath: true,
-								context: srcDir,
+								context,
 							},
 						},
 					],
@@ -51,5 +53,5 @@ export default (options = {}) => {
 			],
 		},
 		stats: 'verbose',
-	};
+	}, webpackConfig);
 };

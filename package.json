@@ -62,7 +62,8 @@
     "mkdirp": "^0.5.1",
     "prettier-eslint-cli": "^4.7.1",
     "rimraf": "^2.5.4",
-    "webpack": "^4.16.0"
+    "webpack": "^4.16.0",
+    "webpack-merge": "^4.1.4"
   },
   "jest": {
     "collectCoverageFrom": [
