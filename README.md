@@ -1,5 +1,5 @@
 # @tinajs/wxml-loader
-wxml loader for webpack 4
+wxml loader for webpack
 
 **Please note this
 [wxml](https://mp.weixin.qq.com/debug/wxadoc/dev/framework/view/wxml/) is a
@@ -7,12 +7,12 @@ markup language for
 [Wechat mini programs](https://mp.weixin.qq.com/debug/wxadoc/dev/)**
 
 ## Difference from original package
-The branch you are currently viewing supports webpack 4, and is **temporarily forked from [Cap32/wxml-loader](https://github.com/Cap32/wxml-loader).**
+The branch you are currently browsing is **forked from [Cap32/wxml-loader](https://github.com/Cap32/wxml-loader)**, but has built-in [Safe-path logic](https://github.com/tinajs/mina-webpack/blob/b23a9a98c2345059a1cb4343563124a49f467804/packages/mina-loader/lib/helpers.js#L90-L94) compatible with [mina-webpack](https://github.com/tinajs/mina-webpack/).
 
 ## Installation
 
 ```bash
-yarn add -D @tinajs/wxml-loader@^0.3.0-fork.0
+yarn add -D @tinajs/wxml-loader@0.3.1-fork.0
 ```
 
 ## Usage
