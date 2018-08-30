@@ -98,6 +98,7 @@ export default function (content) {
 		root = resolve(context, issuerContext),
 		publicPath = getPublicPath(options, this),
 		enforceRelativePath = false,
+		raw = false,
 		format,
 		transformContent = (content) => {
 			switch (target.name) {
@@ -193,6 +194,11 @@ export default function (content) {
 	};
 
 	parser.onend = async () => {
+		const cb = (err, content) =>
+			callback(err, raw ?
+				content :
+				`module.exports = ${JSON.stringify(content)}`);
+
 		try {
 			for (const req of requests) {
 				await replaceRequest(req);
@@ -220,11 +226,11 @@ export default function (content) {
 					...minimizeOptions,
 				});
 			}
-			callback(null, content);
+			cb(null, content);
 		}
 		catch (err) {
 			/* istanbul ignore next */
-			callback(err, content);
+			cb(err, content);
 		}
 	};
 

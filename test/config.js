@@ -30,6 +30,9 @@ export default (options = {}, chainWebpack) => {
 			context,
 		})
 		.end()
+		.use('extract')
+		.loader('extract-loader')
+		.end()
 		.use('wxml')
 		.loader(require.resolve('../src'))
 		.options({

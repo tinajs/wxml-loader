@@ -184,6 +184,9 @@ describe('wxml-loader', async () => {
 					name: '_/index.wxml',
 				})
 				.end()
+				.use('extract')
+				.loader('extract-loader')
+				.end()
 				.use('wxml')
 				.loader(require.resolve('../src'))
 				.options({
@@ -195,6 +198,47 @@ describe('wxml-loader', async () => {
 		});
 		expect(getCompiledRes('_/index.wxml')).toBe(
 			'<image src="../fixture.gif" />',
+		);
+	});
+
+	test('should export javascript by default', async () => {
+		await compile('<view></view>', {}, (config) => {
+			config.module.rule('wxml')
+				.uses.clear().end()
+				.use('file')
+				.loader('file-loader')
+				.options({
+					name: '[name].[ext]',
+				})
+				.end()
+				.use('wxml')
+				.loader(require.resolve('../src'))
+				.end();
+		});
+		expect(getCompiledRes('index.wxml')).toBe(
+			'module.exports = "<view></view>"',
+		);
+	});
+
+	test('should raw optional', async () => {
+		await compile('<view></view>', {}, (config) => {
+			config.module.rule('wxml')
+				.uses.clear().end()
+				.use('file')
+				.loader('file-loader')
+				.options({
+					name: '[name].[ext]',
+				})
+				.end()
+				.use('wxml')
+				.loader(require.resolve('../src'))
+				.options({
+					raw: true,
+				})
+				.end();
+		});
+		expect(getCompiledRes()).toBe(
+			'<view></view>',
 		);
 	});
 });
