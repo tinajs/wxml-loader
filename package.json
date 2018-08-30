@@ -57,13 +57,14 @@
     "eslint-plugin-promise": "^4.0.0",
     "eslint-plugin-react": "^7.11.1",
     "eslint-plugin-standard": "^3.1.0",
+    "extract-loader": "^2.0.1",
     "file-loader": "^1.1.11",
     "jest": "^21.2.1",
     "mkdirp": "^0.5.1",
     "prettier-eslint-cli": "^4.7.1",
     "rimraf": "^2.5.4",
     "webpack": "^4.16.0",
-    "webpack-merge": "^4.1.4"
+    "webpack-chain": "^4.9.0"
   },
   "jest": {
     "collectCoverageFrom": [

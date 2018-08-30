@@ -22,10 +22,10 @@ const mkdir = () => {
 	clear();
 };
 
-const compile = (content, options = {}, webpackConfig = {}) => {
+const compile = (content, options = {}, chainWebpack) => {
 	writeWXML(content);
 	return new Promise((resolve, reject) => {
-		webpack(config(options, webpackConfig), (err, stats) => {
+		webpack(config(options, chainWebpack), (err, stats) => {
 			if (err || stats.hasErrors()) {
 				reject(err || JSON.stringify(stats.toJson('errors-only')));
 			}
@@ -168,48 +168,30 @@ describe('wxml-loader', async () => {
 	test('should generate safe path', async () => {
 		const context = resolve(__dirname, 'src/sub');
 		const outside = resolve(__dirname, 'src');
-		await compile('<image src="./fixture.gif" />', {}, {
-			context,
-			entry: {
-				'_/index.js': '../index.wxml',
-			},
-			output: {
-				filename: '[name]',
-			},
-			module: {
-				rules: [
-					{
-						test: resolve(outside, 'index.wxml'),
-						use: [
-							{
-								loader: 'file-loader',
-								options: {
-									name: '_/index.wxml',
-								},
-							},
-							{
-								loader: require.resolve('../src'),
-								options: {
-									root: context,
-									enforceRelativePath: true,
-								},
-							},
-						],
-					},
-					{
-						test: /\.gif$/,
-						include: outside,
-						use: [
-							{
-								loader: 'file-loader',
-								options: {
-									name: '[name].[ext]',
-								},
-							},
-						],
-					},
-				],
-			},
+		await compile('<image src="./fixture.gif" />', {}, (config) => {
+			config.context(context);
+			config.entryPoints.delete('entry');
+			config
+				.entry('_/index.js')
+				.add('../index.wxml')
+				.end();
+			config.output.filename('[name]');
+			config.module.rule('wxml')
+				.uses.clear().end()
+				.use('file')
+				.loader('file-loader')
+				.options({
+					name: '_/index.wxml',
+				})
+				.end()
+				.use('wxml')
+				.loader(require.resolve('../src'))
+				.options({
+					root: context,
+					enforceRelativePath: true,
+				})
+				.end();
+			config.module.rule('gif').include.add(outside);
 		});
 		expect(getCompiledRes('_/index.wxml')).toBe(
 			'<image src="../fixture.gif" />',

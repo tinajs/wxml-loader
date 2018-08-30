@@ -1,57 +1,60 @@
 import { resolve, dirname } from 'path';
-import merge from 'webpack-merge';
+import Config from 'webpack-chain';
 
-export default (options = {}, webpackConfig = {}) => {
+export default (options = {}, chainWebpack) => {
 	const { target, globalPublicPath = '/', ...wxmlLoaderOptions } = options;
 	const entry = resolve(__dirname, 'src', 'index.wxml');
 	const context = dirname(entry);
 
-	return merge.smart({
-		entry,
-		mode: 'development',
-		output: {
-			filename: 'index.js',
-			publicPath: globalPublicPath,
-			path: resolve(__dirname, 'dist'),
-		},
-		target,
-		module: {
-			rules: [
-				{
-					test: /\.wxml$/,
-					use: [
-						{
-							loader: 'file-loader',
-							options: {
-								name: '[name].[ext]',
-								useRelativePath: true,
-								context,
-							},
-						},
-						{
-							loader: require.resolve('../src'),
-							options: {
-								root: context,
-								...wxmlLoaderOptions,
-							},
-						},
-					],
-				},
-				{
-					test: /\.gif$/,
-					use: [
-						{
-							loader: 'file-loader',
-							options: {
-								name: '[name].[ext]',
-								useRelativePath: true,
-								context,
-							},
-						},
-					],
-				},
-			],
-		},
-		stats: 'verbose',
-	}, webpackConfig);
+	const config = new Config();
+
+	config
+		.entry('entry')
+		.add(entry)
+		.end()
+		.mode('development')
+		.output
+		.filename('index.js')
+		.publicPath(globalPublicPath)
+		.path(resolve(__dirname, 'dist'))
+		.end()
+		.target(target)
+		.module
+		.rule('wxml')
+		.test(/\.wxml$/)
+		.use('file')
+		.loader('file-loader')
+		.options({
+			name: '[name].[ext]',
+			useRelativePath: true,
+			context,
+		})
+		.end()
+		.use('wxml')
+		.loader(require.resolve('../src'))
+		.options({
+			root: context,
+			...wxmlLoaderOptions,
+		})
+		.end()
+		.end()
+		.rule('gif')
+		.test(/\.gif$/)
+		.use('file')
+		.loader('file-loader')
+		.options({
+			name: '[name].[ext]',
+			useRelativePath: true,
+			context,
+		})
+		.end()
+		.end()
+		.end()
+		.stats('verbose');
+
+	if (chainWebpack) {
+		chainWebpack(config);
+	}
+
+	return config.toConfig();
 };
