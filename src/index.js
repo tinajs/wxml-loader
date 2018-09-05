@@ -30,9 +30,10 @@ const extract = (src, __webpack_public_path__) => {
 	return sandbox.module.exports.toString();
 };
 
-const toSafeOutputPath = (filePath) => (filePath || '')
-	.replace(/\.\./g, '_')
-	.replace(/node_modules([/\\])/g, '_node_modules_$1');
+const toSafeOutputPath = (filePath) =>
+	(filePath || '')
+		.replace(/\.\./g, '_')
+		.replace(/node_modules([/\\])/g, '_node_modules_$1');
 
 const defaultMinimizeConf = {
 	caseSensitive: true,
@@ -195,9 +196,10 @@ export default function (content) {
 
 	parser.onend = async () => {
 		const cb = (err, content) =>
-			callback(err, raw ?
-				content :
-				`module.exports = ${JSON.stringify(content)}`);
+			callback(
+				err,
+				raw ? content : `module.exports = ${JSON.stringify(content)}`,
+			);
 
 		try {
 			for (const req of requests) {

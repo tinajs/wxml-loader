@@ -13,14 +13,12 @@ export default (options = {}, chainWebpack) => {
 		.add(entry)
 		.end()
 		.mode('development')
-		.output
-		.filename('index.js')
+		.output.filename('index.js')
 		.publicPath(globalPublicPath)
 		.path(resolve(__dirname, 'dist'))
 		.end()
 		.target(target)
-		.module
-		.rule('wxml')
+		.module.rule('wxml')
 		.test(/\.wxml$/)
 		.use('file')
 		.loader('file-loader')
