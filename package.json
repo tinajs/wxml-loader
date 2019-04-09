@@ -1,7 +1,7 @@
 {
   "name": "@jimexist/mini-program-xml-loader",
   "description": "wxml loader for webpack 4",
-  "version": "0.1.0",
+  "version": "0.3.2",
   "main": "lib/index",
   "files": [
     "*.md",
