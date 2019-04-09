@@ -1,4 +1,5 @@
 # @tinajs/wxml-loader
+
 wxml loader for webpack
 
 **Please note this
@@ -7,6 +8,7 @@ markup language for
 [Wechat mini programs](https://mp.weixin.qq.com/debug/wxadoc/dev/)**
 
 ## Difference from original package
+
 The branch you are currently browsing is **forked from [Cap32/wxml-loader](https://github.com/Cap32/wxml-loader)**, but has built-in [Safe-path logic](https://github.com/tinajs/mina-webpack/blob/b23a9a98c2345059a1cb4343563124a49f467804/packages/mina-loader/lib/helpers.js#L90-L94) compatible with [mina-webpack](https://github.com/tinajs/mina-webpack/).
 
 ## Installation
@@ -46,16 +48,16 @@ You may also need to use
 
 ##### Options
 
-* `root` (String): Root path for requiring sources
-* `enforceRelativePath` (Boolean): Should be true if you wish to generate a
+- `root` (String): Root path for requiring sources
+- `enforceRelativePath` (Boolean): Should be true if you wish to generate a
   `root` relative URL for each file. **It is recommend to set to `true`**
-* `publicPath` (String): Defaults to webpack
+- `publicPath` (String): Defaults to webpack
   [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath)
-* `transformContent(content, resource)` (Function): Transform content, should
+- `transformContent(content, resource)` (Function): Transform content, should
   return a content string
-* `transformUrl(url, resource)` (Function): Transform url, should return a url
-* `minimize` (Boolean): To minimize. Defaults to `false`
-* All
+- `transformUrl(url, resource)` (Function): Transform url, should return a url
+- `minimize` (Boolean): To minimize. Defaults to `false`
+- All
   [html-minifier](https://github.com/kangax/html-minifier#options-quick-reference)
   options are supported
 

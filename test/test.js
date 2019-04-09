@@ -176,8 +176,10 @@ describe('wxml-loader', async () => {
 				.add('../index.wxml')
 				.end();
 			config.output.filename('[name]');
-			config.module.rule('wxml')
-				.uses.clear().end()
+			config.module
+				.rule('wxml')
+				.uses.clear()
+				.end()
 				.use('file')
 				.loader('file-loader')
 				.options({
@@ -203,8 +205,10 @@ describe('wxml-loader', async () => {
 
 	test('should export javascript by default', async () => {
 		await compile('<view></view>', {}, (config) => {
-			config.module.rule('wxml')
-				.uses.clear().end()
+			config.module
+				.rule('wxml')
+				.uses.clear()
+				.end()
 				.use('file')
 				.loader('file-loader')
 				.options({
@@ -222,8 +226,10 @@ describe('wxml-loader', async () => {
 
 	test('should raw optional', async () => {
 		await compile('<view></view>', {}, (config) => {
-			config.module.rule('wxml')
-				.uses.clear().end()
+			config.module
+				.rule('wxml')
+				.uses.clear()
+				.end()
 				.use('file')
 				.loader('file-loader')
 				.options({
@@ -237,8 +243,6 @@ describe('wxml-loader', async () => {
 				})
 				.end();
 		});
-		expect(getCompiledRes()).toBe(
-			'<view></view>',
-		);
+		expect(getCompiledRes()).toBe('<view></view>');
 	});
 });
