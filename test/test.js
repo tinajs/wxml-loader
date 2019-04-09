@@ -4,8 +4,8 @@ import { readFileSync, writeFileSync } from 'fs';
 import webpack from 'webpack';
 import config from './config';
 
-const getCompiledRes = () =>
-	readFileSync(resolve(__dirname, 'dist', 'index.wxml'), 'utf8');
+const getCompiledRes = (filePath = 'index.wxml') =>
+	readFileSync(resolve(__dirname, 'dist', filePath), 'utf8');
 
 const writeWXML = (content) =>
 	writeFileSync(resolve(__dirname, 'src', 'index.wxml'), content, 'utf8');
@@ -22,10 +22,10 @@ const mkdir = () => {
 	clear();
 };
 
-const compile = (content, options = {}) => {
+const compile = (content, options = {}, chainWebpack) => {
 	writeWXML(content);
 	return new Promise((resolve, reject) => {
-		webpack(config(options), (err, stats) => {
+		webpack(config(options, chainWebpack), (err, stats) => {
 			if (err || stats.hasErrors()) {
 				reject(err || JSON.stringify(stats.toJson('errors-only')));
 			}
@@ -157,11 +157,100 @@ describe('wxml-loader', async () => {
 		expect(getCompiledRes()).toBe('<image src="./images/image.gif" />');
 	});
 
+	test('should enforceRelativePath ignore url with procotol', async () => {
+		const code = '<image src="cloud://m.baidu.com/fixture.gif" />';
+		await compile(code, { enforceRelativePath: true });
+		expect(getCompiledRes()).toBe(
+			'<image src="cloud://m.baidu.com/fixture.gif" />',
+		);
+	});
+
 	test('should work if publicPath starts with protocol', async () => {
 		const code = '<image src="./fixture.gif" />';
 		await compile(code, { globalPublicPath: 'http://m.baidu.com/' });
 		expect(getCompiledRes()).toBe(
 			'<image src="http://m.baidu.com/fixture.gif" />',
 		);
+	});
+
+	test('should generate safe path', async () => {
+		const context = resolve(__dirname, 'src/sub');
+		const outside = resolve(__dirname, 'src');
+		await compile('<image src="./fixture.gif" />', {}, (config) => {
+			config.context(context);
+			config.entryPoints.delete('entry');
+			config
+				.entry('_/index.js')
+				.add('../index.wxml')
+				.end();
+			config.output.filename('[name]');
+			config.module
+				.rule('wxml')
+				.uses.clear()
+				.end()
+				.use('file')
+				.loader('file-loader')
+				.options({
+					name: '_/index.wxml',
+				})
+				.end()
+				.use('extract')
+				.loader('extract-loader')
+				.end()
+				.use('wxml')
+				.loader(require.resolve('../src'))
+				.options({
+					root: context,
+					enforceRelativePath: true,
+				})
+				.end();
+			config.module.rule('gif').include.add(outside);
+		});
+		expect(getCompiledRes('_/index.wxml')).toBe(
+			'<image src="../fixture.gif" />',
+		);
+	});
+
+	test('should export javascript by default', async () => {
+		await compile('<view></view>', {}, (config) => {
+			config.module
+				.rule('wxml')
+				.uses.clear()
+				.end()
+				.use('file')
+				.loader('file-loader')
+				.options({
+					name: '[name].[ext]',
+				})
+				.end()
+				.use('wxml')
+				.loader(require.resolve('../src'))
+				.end();
+		});
+		expect(getCompiledRes('index.wxml')).toBe(
+			'module.exports = "<view></view>"',
+		);
+	});
+
+	test('should raw optional', async () => {
+		await compile('<view></view>', {}, (config) => {
+			config.module
+				.rule('wxml')
+				.uses.clear()
+				.end()
+				.use('file')
+				.loader('file-loader')
+				.options({
+					name: '[name].[ext]',
+				})
+				.end()
+				.use('wxml')
+				.loader(require.resolve('../src'))
+				.options({
+					raw: true,
+				})
+				.end();
+		});
+		expect(getCompiledRes()).toBe('<view></view>');
 	});
 });

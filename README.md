@@ -1,13 +1,4 @@
-# wxml-loader
-
-[![CircleCI](https://circleci.com/gh/Cap32/wxml-loader.svg?style=shield)](https://circleci.com/gh/Cap32/wxml-loader)
-[![Build Status](https://travis-ci.org/Cap32/wxml-loader.svg?branch=master)](https://travis-ci.org/Cap32/wxml-loader)
-[![Build status](https://ci.appveyor.com/api/projects/status/kcp9grsyjd73n0lm?svg=true)](https://ci.appveyor.com/project/Cap32/wxml-loader)
-[![Coverage Status](https://coveralls.io/repos/github/Cap32/wxml-loader/badge.svg?branch=master)](https://coveralls.io/github/Cap32/wxml-loader?branch=master)
-[![npm version](https://badge.fury.io/js/wxml-loader.svg)](https://badge.fury.io/js/wxml-loader)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![License](https://img.shields.io/badge/license-MIT_License-blue.svg?style=flat)](https://github.com/Cap32/wxml-loader/blob/master/LICENSE.md)
-
+# @tinajs/wxml-loader
 wxml loader for webpack
 
 **Please note this
@@ -15,10 +6,13 @@ wxml loader for webpack
 markup language for
 [Wechat mini programs](https://mp.weixin.qq.com/debug/wxadoc/dev/)**
 
+## Difference from original package
+The branch you are currently browsing is **forked from [Cap32/wxml-loader](https://github.com/Cap32/wxml-loader)**, but has built-in [Safe-path logic](https://github.com/tinajs/mina-webpack/blob/b23a9a98c2345059a1cb4343563124a49f467804/packages/mina-loader/lib/helpers.js#L90-L94) compatible with [mina-webpack](https://github.com/tinajs/mina-webpack/).
+
 ## Installation
 
 ```bash
-yarn add -D wxml-loader
+yarn add -D @tinajs/wxml-loader@0.3.1-fork.0
 ```
 
 ## Usage
@@ -40,7 +34,7 @@ You may also need to use
       },
     },
     {
-      loader: 'wxml-loader',
+      loader: '@tinajs/wxml-loader',
       options: {
         root: resolve('src'),
         enforceRelativePath: true,
@@ -93,10 +87,12 @@ Wechat and Alipay mini programs.
 webpack.config.babel.js
 
 ```js
-import WXAppWebpackPlugin, { Targets } from "wxapp-webpack-plugin";
+import webpack from 'webpack';
+import WXAppWebpackPlugin from "wxapp-webpack-plugin";
+
 export default env => ({
   // ...other
-  target: Targets[env.target || "Wechat"],
+  target: (compiler) => compiler.apply(new webpack.LoaderTargetPlugin(env.target || "Wechat"))
   module: {
     rules: [
       // ...other,
@@ -112,7 +108,7 @@ export default env => ({
             },
           },
           {
-            loader: 'wxml-loader',
+            loader: '@tinajs/wxml-loader',
             options: {
               root: resolve('src'),
               enforceRelativePath: true,
