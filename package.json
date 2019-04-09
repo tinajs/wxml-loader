@@ -1,7 +1,7 @@
 {
-  "name": "@tinajs/wxml-loader",
+  "name": "@jimexist/mini-program-xml-loader",
   "description": "wxml loader for webpack 4",
-  "version": "0.3.1-fork.2",
+  "version": "0.1.0",
   "main": "lib/index",
   "files": [
     "*.md",
@@ -19,8 +19,8 @@
     "build": "babel src -d lib",
     "preversion": "yarn test && yarn build"
   },
-  "author": "cap32",
-  "repository": "tinajs/wxml-loader",
+  "author": "Jimexist",
+  "repository": "Jimexist/mini-program-xml-loader",
   "keywords": [
     "wxml",
     "loader",
@@ -31,7 +31,7 @@
     "wechat",
     "alipay"
   ],
-  "licenses": "MIT",
+  "license": "MIT",
   "dependencies": {
     "html-minifier": "^3.5.6",
     "loader-utils": "^1.2.3",
